@@ -26,6 +26,18 @@
     if (!frame) frame = requestAnimationFrame(scrub);
   }
 
+  let preloaderFallback;
+  function finishPreloader() {
+    if (!preloader.isConnected) return;
+    window.clearTimeout(preloaderFallback);
+    preloader.remove();
+    root.classList.add('is-revealed');
+  }
+
+  preloader.addEventListener('transitionend', (event) => {
+    if (event.target === preloader && event.propertyName === 'transform') finishPreloader();
+  });
+
   function updateScrollVideo() {
     if (!videoReady) return;
     const travel = Math.max(1, stage.offsetHeight - hero.offsetHeight);
@@ -57,8 +69,8 @@
 
   Promise.all([fontReady, loadVideo(), sleep(reducedMotion.matches ? 100 : 1900)]).then(() => {
     root.classList.add('is-ready');
-    window.setTimeout(() => root.classList.add('is-revealed'), reducedMotion.matches ? 0 : 1200);
-    window.setTimeout(() => preloader.remove(), reducedMotion.matches ? 100 : 1350);
+    if (reducedMotion.matches) finishPreloader();
+    else preloaderFallback = window.setTimeout(finishPreloader, 1500);
   }).catch(() => {
     const message = document.createElement('p');
     message.className = 'preloader__error';
