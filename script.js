@@ -2,61 +2,78 @@
   const root = document.documentElement;
   const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
   const stage = document.querySelector('.hero-stage');
+  const hero = document.querySelector('.hero');
   const backgroundVideo = document.querySelector('.hero__video');
-  const heroImage = document.querySelector('.hero__background img');
+  const dialog = document.querySelector('.tour-dialog');
+  const dialogVideo = dialog.querySelector('video');
   const preloader = document.querySelector('.preloader');
 
   const sleep = (ms) => new Promise((resolve) => window.setTimeout(resolve, ms));
-  const imageReady = heroImage.decode ? heroImage.decode().catch(() => {}) : Promise.resolve();
   const fontReady = document.fonts ? document.fonts.ready.catch(() => {}) : Promise.resolve();
-  const assetsReady = Promise.race([Promise.all([imageReady, fontReady]), sleep(4500)]);
-
-  Promise.all([assetsReady, sleep(reducedMotion.matches ? 100 : 1900)]).then(() => {
-    root.classList.add('is-ready');
-    window.setTimeout(() => root.classList.add('is-revealed'), reducedMotion.matches ? 0 : 1050);
-    window.setTimeout(() => preloader.remove(), reducedMotion.matches ? 100 : 1350);
-  });
-
   let videoReady = false;
   let targetTime = 0;
   let frame = 0;
-  let lastSeek = 0;
 
-  function scrub(timestamp) {
+  function scrub() {
     frame = 0;
-    if (!videoReady || reducedMotion.matches || document.hidden || backgroundVideo.error) return;
-    const difference = targetTime - backgroundVideo.currentTime;
-    if (Math.abs(difference) < 0.035) return;
-
-    if (!backgroundVideo.seeking && timestamp - lastSeek > 36) {
-      backgroundVideo.currentTime = Math.max(0, Math.min(backgroundVideo.duration - 0.05,
-        backgroundVideo.currentTime + difference * 0.32));
-      lastSeek = timestamp;
+    if (!videoReady || document.hidden || backgroundVideo.error) return;
+    if (Math.abs(targetTime - backgroundVideo.currentTime) > 0.025) {
+      backgroundVideo.currentTime = targetTime;
     }
-    frame = requestAnimationFrame(scrub);
   }
 
-  function updateScrollVideo() {
-    if (!videoReady || reducedMotion.matches) return;
-    const travel = Math.max(1, stage.offsetHeight - window.innerHeight);
-    const progress = Math.max(0, Math.min(1, -stage.getBoundingClientRect().top / travel));
-    targetTime = progress * Math.max(0, backgroundVideo.duration - 0.05);
-    root.classList.toggle('video-ready', progress > 0.005);
+  function scheduleScrub() {
     if (!frame) frame = requestAnimationFrame(scrub);
   }
 
-  backgroundVideo.addEventListener('loadeddata', () => {
-    if (!Number.isFinite(backgroundVideo.duration) || backgroundVideo.duration <= 0) return;
-    videoReady = true;
+  function updateScrollVideo() {
+    if (!videoReady) return;
+    const travel = Math.max(1, stage.offsetHeight - hero.offsetHeight);
+    const progress = Math.max(0, Math.min(1, -stage.getBoundingClientRect().top / travel));
+    targetTime = progress * Math.max(0, backgroundVideo.duration - 0.05);
+    scheduleScrub();
+  }
+
+  async function loadVideo() {
+    const response = await fetch(backgroundVideo.dataset.src, { credentials: 'same-origin' });
+    if (!response.ok) throw new Error(`Video request failed: ${response.status}`);
+    const bytes = await response.blob();
+    if (!bytes.size) throw new Error('Video file is empty');
+    const videoUrl = URL.createObjectURL(new Blob([bytes], { type: 'video/mp4' }));
+    await new Promise((resolve, reject) => {
+      backgroundVideo.addEventListener('loadeddata', resolve, { once: true });
+      backgroundVideo.addEventListener('error', () => reject(new Error('Video could not be decoded')), { once: true });
+      backgroundVideo.src = videoUrl;
+      backgroundVideo.load();
+    });
+    if (!Number.isFinite(backgroundVideo.duration) || backgroundVideo.duration <= 0) {
+      throw new Error('Video duration is unavailable');
+    }
     backgroundVideo.pause();
+    dialogVideo.src = videoUrl;
+    videoReady = true;
     updateScrollVideo();
-  }, { once: true });
+  }
+
+  Promise.all([fontReady, loadVideo(), sleep(reducedMotion.matches ? 100 : 1900)]).then(() => {
+    root.classList.add('is-ready');
+    window.setTimeout(() => root.classList.add('is-revealed'), reducedMotion.matches ? 0 : 1050);
+    window.setTimeout(() => preloader.remove(), reducedMotion.matches ? 100 : 1350);
+  }).catch(() => {
+    const message = document.createElement('p');
+    message.className = 'preloader__error';
+    message.textContent = 'Video could not load. Please refresh the page.';
+    preloader.append(message);
+  });
+
+  backgroundVideo.addEventListener('seeked', () => {
+    if (Math.abs(targetTime - backgroundVideo.currentTime) > 0.025) scheduleScrub();
+  });
   window.addEventListener('scroll', updateScrollVideo, { passive: true });
   window.addEventListener('resize', updateScrollVideo, { passive: true });
   document.addEventListener('visibilitychange', () => {
     if (!document.hidden) updateScrollVideo();
   });
-  backgroundVideo.load();
 
   const menuButton = document.querySelector('.menu-toggle');
   const menuLinks = document.querySelectorAll('.site-nav a');
@@ -72,8 +89,6 @@
   });
 
   const tourCard = document.querySelector('.tour-card');
-  const dialog = document.querySelector('.tour-dialog');
-  const dialogVideo = dialog.querySelector('video');
   const closeButton = dialog.querySelector('.tour-dialog__close');
   function openTour() {
     dialog.showModal();
