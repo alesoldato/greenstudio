@@ -57,7 +57,7 @@
 
   Promise.all([fontReady, loadVideo(), sleep(reducedMotion.matches ? 100 : 1900)]).then(() => {
     root.classList.add('is-ready');
-    window.setTimeout(() => root.classList.add('is-revealed'), reducedMotion.matches ? 0 : 1050);
+    window.setTimeout(() => root.classList.add('is-revealed'), reducedMotion.matches ? 0 : 1200);
     window.setTimeout(() => preloader.remove(), reducedMotion.matches ? 100 : 1350);
   }).catch(() => {
     const message = document.createElement('p');
