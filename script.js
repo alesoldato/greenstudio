@@ -52,7 +52,10 @@
   }
 
   async function loadVideo() {
-    const response = await fetch(backgroundVideo.dataset.src, { credentials: 'same-origin' });
+    const videoSource = window.matchMedia('(max-width: 600px)').matches
+      ? backgroundVideo.dataset.srcMobile
+      : backgroundVideo.dataset.src;
+    const response = await fetch(videoSource, { credentials: 'same-origin' });
     if (!response.ok) throw new Error(`Video request failed: ${response.status}`);
     const bytes = await response.blob();
     if (!bytes.size) throw new Error('Video file is empty');

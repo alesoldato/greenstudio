@@ -42,12 +42,12 @@ html.has-js:not(.is-ready) body { overflow: hidden; }
 .has-js .reveal { opacity: 0; transform: translateY(35px); }
 .has-js .reveal--header { transform: none; }
 .has-js .heading-line { opacity: 0; transform: translateY(35px); }
-.is-revealed .reveal:not(.reveal--header), .is-revealed .heading-line, .is-header-revealed .reveal--header { opacity: 1; transform: translateY(0); transition: opacity 1.1s cubic-bezier(.22,1,.36,1), transform 1.1s cubic-bezier(.22,1,.36,1); }
-.is-revealed .heading-line:nth-child(1) { transition-delay: .14s; }
-.is-revealed .heading-line:nth-child(2) { transition-delay: .26s; }
-.is-revealed .heading-line:nth-child(3) { transition-delay: .38s; }
-.is-revealed .reveal--cta, .is-revealed .reveal--subheading { transition-delay: .58s; }
-.is-revealed .reveal--tour { transition-delay: .8s; }
+.is-revealed .reveal:not(.reveal--header), .is-revealed .heading-line, .is-header-revealed .reveal--header { opacity: 1; transform: translateY(0); transition: opacity 1.1s cubic-bezier(.22,1,.36,1) var(--reveal-delay, 0s), transform 1.1s cubic-bezier(.22,1,.36,1) var(--reveal-delay, 0s); }
+.heading-line:nth-child(1) { --reveal-delay: .14s; }
+.heading-line:nth-child(2) { --reveal-delay: .26s; }
+.heading-line:nth-child(3) { --reveal-delay: .38s; }
+.reveal--cta, .reveal--subheading { --reveal-delay: 1.55s; }
+.reveal--tour { --reveal-delay: 2.7s; }
 
 .tour-dialog { width: min(1040px, calc(100vw - 40px)); max-width: none; max-height: calc(100svh - 40px); overflow: visible; padding: 0; border: 0; border-radius: 12px; color: #fff; background: #1f261d; box-shadow: 0 24px 80px rgba(0,0,0,.35); }
 .tour-dialog::backdrop { background: rgba(14,20,12,.72); backdrop-filter: blur(8px); }
@@ -76,14 +76,13 @@ html.has-js:not(.is-ready) body { overflow: hidden; }
 }
 
 @media (max-width: 600px) {
-  .hero__background { inset: 0; width: auto; height: auto; }
-  .hero__video { object-fit: cover; }
+  .hero__background { inset: 0; width: auto; height: auto; transform: scale(1.035); }
+  .hero__video { object-fit: cover; object-position: center; }
   .hero__copy { gap: 24px; }
   .hero__actions { align-items: stretch; gap: 31px; width: 100%; }
   .hero__actions .cta { margin-top: 0; }
   .preloader img { transform: scale(.34); }
-  .is-revealed .reveal--subheading { transition-delay: .58s; }
-  .is-revealed .reveal--cta { transition-delay: .72s; }
+  .reveal--cta { --reveal-delay: 2.25s; }
 }
 
 @media (prefers-reduced-motion: reduce) {
