@@ -76,7 +76,7 @@
     root.classList.add('is-ready');
     if (reducedMotion.matches) finishPreloader();
     else {
-      window.setTimeout(revealHeader, 1125);
+      window.setTimeout(revealHeader, 1000);
       preloaderFallback = window.setTimeout(finishPreloader, 1500);
     }
   }).catch(() => {
