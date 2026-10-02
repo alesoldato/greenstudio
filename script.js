@@ -16,7 +16,7 @@
 
   function scrub() {
     frame = 0;
-    if (!videoReady || document.hidden || backgroundVideo.error) return;
+    if (!videoReady || document.hidden || backgroundVideo.error || backgroundVideo.seeking) return;
     if (Math.abs(targetTime - backgroundVideo.currentTime) > 0.025) {
       backgroundVideo.currentTime = targetTime;
     }
