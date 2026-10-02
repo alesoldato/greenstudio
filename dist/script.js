@@ -27,10 +27,15 @@
   }
 
   let preloaderFallback;
+  function revealHeader() {
+    root.classList.add('is-header-revealed');
+  }
+
   function finishPreloader() {
     if (!preloader.isConnected) return;
     window.clearTimeout(preloaderFallback);
     preloader.remove();
+    revealHeader();
     root.classList.add('is-revealed');
   }
 
@@ -70,7 +75,10 @@
   Promise.all([fontReady, loadVideo(), sleep(reducedMotion.matches ? 100 : 1900)]).then(() => {
     root.classList.add('is-ready');
     if (reducedMotion.matches) finishPreloader();
-    else preloaderFallback = window.setTimeout(finishPreloader, 1500);
+    else {
+      window.setTimeout(revealHeader, 450);
+      preloaderFallback = window.setTimeout(finishPreloader, 1500);
+    }
   }).catch(() => {
     const message = document.createElement('p');
     message.className = 'preloader__error';
