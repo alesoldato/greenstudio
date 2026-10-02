@@ -7,9 +7,9 @@ html.has-js:not(.is-ready) body { overflow: hidden; }
 
 .hero-stage { height: 240svh; }
 .hero { position: sticky; top: 0; height: 100vh; height: 100svh; }
-.hero__background { transform: scale(1.14); transform-origin: center; }
+.hero__background { transform: scale(1.22); transform-origin: center; }
 .hero__video { position: absolute; inset: 0; display: block; width: 100%; height: 100%; object-fit: cover; object-position: center; }
-.is-ready .hero__background { transform: scale(1); transition: transform 1.9s cubic-bezier(.18,.67,.21,1); }
+.is-revealed .hero__background { transform: scale(1); transition: transform 1.9s cubic-bezier(.18,.67,.21,1); }
 
 .site-nav a { position: relative; overflow: hidden; }
 .site-nav a span { display: block; transition: transform .65s cubic-bezier(.22,1,.36,1); }
@@ -43,12 +43,12 @@ html.has-js:not(.is-ready) body { overflow: hidden; }
 .has-js .reveal--header { transform: none; }
 .has-js .heading-line { opacity: 0; transform: translateY(35px); }
 .is-revealed .reveal:not(.reveal--header), .is-revealed .heading-line, .is-header-revealed .reveal--header { opacity: 1; transform: translateY(0); transition: opacity 1.32s cubic-bezier(.22,1,.36,1) var(--reveal-delay, 0s), transform 1.32s cubic-bezier(.22,1,.36,1) var(--reveal-delay, 0s); }
-/* Each visible reveal starts 250ms after the previous one. */
+/* Each visible reveal starts 125ms after the previous one. */
 .heading-line:nth-child(1) { --reveal-delay: .10s; }
-.heading-line:nth-child(2) { --reveal-delay: .35s; }
-.heading-line:nth-child(3) { --reveal-delay: .60s; }
-.reveal--cta, .reveal--subheading { --reveal-delay: .85s; }
-.reveal--tour { --reveal-delay: 1.10s; }
+.heading-line:nth-child(2) { --reveal-delay: .225s; }
+.heading-line:nth-child(3) { --reveal-delay: .35s; }
+.reveal--cta, .reveal--subheading { --reveal-delay: .475s; }
+.reveal--tour { --reveal-delay: .60s; }
 
 .tour-dialog { width: min(1040px, calc(100vw - 40px)); max-width: none; max-height: calc(100svh - 40px); overflow: visible; padding: 0; border: 0; border-radius: 12px; color: #fff; background: #1f261d; box-shadow: 0 24px 80px rgba(0,0,0,.35); }
 .tour-dialog::backdrop { background: rgba(14,20,12,.72); backdrop-filter: blur(8px); }
@@ -77,18 +77,18 @@ html.has-js:not(.is-ready) body { overflow: hidden; }
 }
 
 @media (max-width: 600px) {
-  .hero__background { inset: 0; width: auto; height: auto; transform: scale(1.035); }
+  .hero__background { inset: 0; width: auto; height: auto; transform: scale(1.10); }
   .hero__video { object-fit: cover; object-position: 60% center; }
   .hero__copy { gap: 24px; }
   .hero__actions { align-items: stretch; gap: 31px; width: 100%; }
   .hero__actions .cta { margin-top: 0; }
   .preloader img { transform: scale(.34); }
-  .reveal--cta { --reveal-delay: 1.10s; }
+  .reveal--cta { --reveal-delay: .60s; }
 }
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; scroll-behavior: auto !important; }
-  .hero__background { transform: none; }
+  .hero__background, .is-revealed .hero__background { transform: none; }
   .has-js .reveal { opacity: 1; transform: none; }
   .has-js .heading-line { opacity: 1; transform: none; }
 }
