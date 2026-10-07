@@ -92,3 +92,14 @@ html.has-js:not(.is-ready) body { overflow: hidden; }
   .has-js .reveal { opacity: 1; transform: none; }
   .has-js .heading-line { opacity: 1; transform: none; }
 }
+
+@media (min-width: 1920px) {
+  .cta__arrow { flex: none; width: calc(24 * var(--wide-unit)); height: calc(24 * var(--wide-unit)); }
+  .cta__arrow img { width: 100% !important; height: 100% !important; }
+  .cta__arrow--enter { left: calc(27 * var(--wide-unit)); transform: translate(calc(-22 * var(--wide-unit)), -50%); }
+  .cta:hover .cta__text, .cta:focus-visible .cta__text { transform: translateX(calc(15 * var(--wide-unit))); }
+  .cta:hover .cta__arrow--exit, .cta:focus-visible .cta__arrow--exit { transform: translateX(calc(36 * var(--wide-unit))); }
+  .cta:hover .cta__arrow--enter, .cta:focus-visible .cta__arrow--enter { transform: translate(0, -50%); }
+  .has-js .preloader { padding: calc(45 * var(--wide-unit)) calc(60 * var(--wide-unit)) calc(60 * var(--wide-unit)); }
+  .preloader img { width: calc(236.4 * var(--wide-unit)); height: calc(219.682 * var(--wide-unit)); }
+}
